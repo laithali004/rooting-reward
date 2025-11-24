@@ -270,7 +270,9 @@
 
         <div class="content">
           <p>
-            Your friend wants to be held accountable to:
+            <span id="friend-wrapper">
+              <span id="friend-name"></span> wants to be held accountable to:
+            </span>
             <span class="blue-link" id="habit-text">
               whatever habit the friend wrote
             </span>
@@ -338,7 +340,10 @@
           </div>
 
           <p>
-            Your friend will see this when they've stuck to their habit for
+            <span id="friend-wrapper-2">
+              <span id="friend-name-2"></span> will see this when they've stuck
+              to their habit for
+            </span>
             <span class="blue-link" id="time-text">amount of time</span>
           </p>
         </div>
@@ -376,6 +381,19 @@
       const timeParam = params.get("time") || "amount of time";
       document.getElementById("habit-text").textContent = habitParam;
       document.getElementById("time-text").textContent = timeParam;
+
+      const friendParam = params.get("friend") || "";
+
+      const friendEl1 = document.getElementById("friend-name");
+      const friendEl2 = document.getElementById("friend-name-2");
+
+      if (friendParam.trim() === "") {
+        friendEl1.textContent = "Your friend";
+        friendEl2.textContent = "Your friend";
+      } else {
+        friendEl1.textContent = friendParam;
+        friendEl2.textContent = friendParam;
+      }
 
       /* -------------------------- REWARD TYPE SWITCH -------------------------- */
       let currentRewardType = "gift";
