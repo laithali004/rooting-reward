@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Keep Them in Rootine!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: #f3f4f6;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+      }
+
+      .wrapper {
+        width: 100%;
+        max-width: 720px;
+        padding: 24px 24px 40px;
+      }
+
+      .phone {
+        width: 100%;
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .status-bar {
+        padding: 8px 20px;
+        font-size: 12px;
+        color: #9ca3af;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .header {
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .header-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: #111827;
+      }
+
+      .content {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        flex: 1;
+      }
+
+      p {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.5;
+        color: #111827;
+      }
+
+      .blue-link {
+        color: #2563eb;
+        text-decoration: underline;
+        font-weight: 500;
+      }
+
+      .reward-type-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 2px;
+        margin-bottom: 4px;
+      }
+
+      .reward-pill {
+        flex: 1;
+        text-align: center;
+        padding: 8px 10px;
+        border-radius: 999px;
+        border: 1px solid #d1d5db;
+        background: #f9fafb;
+        font-size: 13px;
+        cursor: pointer;
+        color: #4b5563;
+        transition: background 0.15s, color 0.15s, border-color 0.15s;
+        user-select: none;
+      }
+
+      .reward-pill.active {
+        background: #111827;
+        color: #f9fafb;
+        border-color: #111827;
+      }
+
+      .reward-section {
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 14px 16px 12px;
+        background: #f9fafb;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .reward-section label {
+        font-size: 13px;
+        color: #4b5563;
+        font-weight: 500;
+      }
+
+      .reward-section input,
+      .reward-section textarea {
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid #d1d5db;
+        font-size: 14px;
+        outline: none;
+        resize: vertical;
+        min-height: 44px;
+        transition: border-color 0.15s, box-shadow 0.15s;
+        font-family: inherit;
+      }
+
+      .reward-section input:focus,
+      .reward-section textarea:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.3);
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      /* Drawing styles */
+      .canvas-wrapper {
+        border-radius: 10px;
+        border: 1px solid #d1d5db;
+        background: #ffffff;
+        overflow: hidden;
+      }
+
+      canvas {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        touch-action: none;
+        background: #ffffff;
+      }
+
+      .draw-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 8px;
+        flex-wrap: wrap;
+        font-size: 13px;
+        color: #4b5563;
+      }
+
+      #color-picker {
+        width: 32px;
+        height: 24px;
+        padding: 0;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        background: transparent;
+        cursor: pointer;
+      }
+
+      .tool-button {
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid #d1d5db;
+        background: #f9fafb;
+        cursor: pointer;
+        font-size: 12px;
+      }
+
+      .tool-button.active {
+        background: #111827;
+        color: #f9fafb;
+        border-color: #111827;
+      }
+
+      #line-width {
+        width: 110px;
+      }
+
+      .footer {
+        padding: 14px 20px 18px;
+        border-top: 1px solid #e5e7eb;
+        background: #f9fafb;
+      }
+
+      .send-btn {
+        width: 100%;
+        padding: 12px 0;
+        border-radius: 999px;
+        border: none;
+        background: #020617;
+        color: #f9fafb;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: transform 0.05s ease, box-shadow 0.1s ease,
+          background 0.1s ease;
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.25);
+      }
+
+      .send-btn:hover {
+        background: #020314;
+      }
+
+      .send-btn:active {
+        transform: translateY(1px) scale(0.99);
+        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.25);
+      }
+
+      .status {
+        margin-top: 8px;
+        font-size: 12px;
+        text-align: center;
+        color: #6b7280;
+        min-height: 16px;
+      }
+
+      @media (max-width: 600px) {
+        body {
+          background: #ffffff;
+        }
+        .wrapper {
+          padding: 0;
+        }
+        .phone {
+          border-radius: 0;
+          box-shadow: none;
+          min-height: 100vh;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <div class="phone">
+        <div class="status-bar">
+          <span id="status-time">--:--</span>
+        </div>
+
+        <div class="header">
+          <span class="header-title">Keep Them in Rootine!</span>
+          <span style="font-size: 22px">🌱</span>
+        </div>
+
+        <div class="content">
+          <p>
+            Your friend wants to be held accountable to:
+            <span class="blue-link" id="habit-text">
+              whatever habit the friend wrote
+            </span>
+          </p>
+
+          <div>
+            <p style="font-size: 13px; color: #4b5563; margin-bottom: 6px">
+              Choose how you want to reward them:
+            </p>
+            <div class="reward-type-row">
+              <div class="reward-pill active" data-type="gift">
+                Gift card code
+              </div>
+              <div class="reward-pill" data-type="message">
+                Words of encouragement
+              </div>
+              <div class="reward-pill" data-type="drawing">Drawing</div>
+            </div>
+          </div>
+
+          <!-- Gift card -->
+          <div class="reward-section" id="reward-gift">
+            <label for="gift-code">Enter a gift card code</label>
+            <input type="text" id="gift-code" placeholder="XXXX-XXXX-XXXX" />
+          </div>
+
+          <!-- Message -->
+          <div class="reward-section hidden" id="reward-message">
+            <label for="encouragement">Write a message</label>
+            <textarea
+              id="encouragement"
+              placeholder="Write something encouraging or funny..."
+            ></textarea>
+          </div>
+
+          <!-- Drawing -->
+          <div class="reward-section hidden" id="reward-drawing">
+            <label>Draw something for your friend</label>
+
+            <div class="draw-toolbar">
+              <label>
+                Color:
+                <input type="color" id="color-picker" value="#111827" />
+              </label>
+
+              <button class="tool-button" id="eraser-btn">Eraser</button>
+              <button class="tool-button" id="clear-btn">Clear</button>
+
+              <label>
+                Line width:
+                <input
+                  type="range"
+                  id="line-width"
+                  min="1"
+                  max="16"
+                  value="3"
+                />
+              </label>
+            </div>
+
+            <div class="canvas-wrapper">
+              <canvas id="draw-canvas" width="600" height="220"></canvas>
+            </div>
+            <small>Use your mouse or finger to draw.</small>
+          </div>
+
+          <p>
+            Your friend will see this when they've stuck to their habit for
+            <span class="blue-link" id="time-text">amount of time</span>
+          </p>
+        </div>
+
+        <div class="footer">
+          <button class="send-btn" id="send-btn">Send</button>
+          <div class="status" id="status-text"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JSZip -->
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+    <script>
+      /* -------------------------- TIME -------------------------- */
+      const timeEl = document.getElementById("status-time");
+      function formatTime(date) {
+        let h = date.getHours();
+        let m = String(date.getMinutes()).padStart(2, "0");
+        const ampm = h >= 12 ? "PM" : "AM";
+        h = h % 12 || 12;
+        return `${h}:${m} ${ampm}`;
+      }
+      function updateTime() {
+        timeEl.textContent = formatTime(new Date());
+      }
+      updateTime();
+      setInterval(updateTime, 30000);
+
+      /* -------------------------- URL PARAMS -------------------------- */
+      const params = new URLSearchParams(location.search);
+      const habitParam =
+        params.get("habit") || "whatever habit the friend wrote";
+      const timeParam = params.get("time") || "amount of time";
+      document.getElementById("habit-text").textContent = habitParam;
+      document.getElementById("time-text").textContent = timeParam;
+
+      /* -------------------------- REWARD TYPE SWITCH -------------------------- */
+      let currentRewardType = "gift";
+      const pills = document.querySelectorAll(".reward-pill");
+      const giftSection = document.getElementById("reward-gift");
+      const msgSection = document.getElementById("reward-message");
+      const drawSection = document.getElementById("reward-drawing");
+
+      function updateRewardSections() {
+        giftSection.classList.toggle("hidden", currentRewardType !== "gift");
+        msgSection.classList.toggle("hidden", currentRewardType !== "message");
+        drawSection.classList.toggle("hidden", currentRewardType !== "drawing");
+
+        pills.forEach((p) =>
+          p.classList.toggle("active", p.dataset.type === currentRewardType)
+        );
+      }
+
+      pills.forEach((pill) =>
+        pill.addEventListener("click", () => {
+          currentRewardType = pill.dataset.type;
+          updateRewardSections();
+        })
+      );
+
+      updateRewardSections();
+
+      /* -------------------------- CUSTOM DRAWING -------------------------- */
+      const canvas = document.getElementById("draw-canvas");
+      const ctx = canvas.getContext("2d");
+
+      let isDrawing = false;
+      let lastX = 0;
+      let lastY = 0;
+
+      let currentColor = "#111827";
+      let eraserMode = false;
+      let hasDrawing = false;
+
+      let currentLineWidth = 3;
+
+      const bgColor = "#ffffff";
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.lineCap = "round";
+
+      function getPos(e) {
+        const r = canvas.getBoundingClientRect();
+        if (e.touches && e.touches.length) {
+          return {
+            x: e.touches[0].clientX - r.left,
+            y: e.touches[0].clientY - r.top,
+          };
+        }
+        return { x: e.clientX - r.left, y: e.clientY - r.top };
+      }
+
+      function startDraw(e) {
+        e.preventDefault();
+        const p = getPos(e);
+        isDrawing = true;
+        lastX = p.x;
+        lastY = p.y;
+      }
+
+      function moveDraw(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const p = getPos(e);
+
+        ctx.strokeStyle = eraserMode ? bgColor : currentColor;
+        ctx.lineWidth = currentLineWidth;
+
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+
+        lastX = p.x;
+        lastY = p.y;
+
+        hasDrawing = true;
+      }
+
+      function endDraw(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        isDrawing = false;
+      }
+
+      canvas.addEventListener("mousedown", startDraw);
+      canvas.addEventListener("mousemove", moveDraw);
+      canvas.addEventListener("mouseup", endDraw);
+      canvas.addEventListener("mouseleave", endDraw);
+
+      canvas.addEventListener("touchstart", startDraw, { passive: false });
+      canvas.addEventListener("touchmove", moveDraw, { passive: false });
+      canvas.addEventListener("touchend", endDraw, { passive: false });
+
+      const colorPicker = document.getElementById("color-picker");
+      const eraserBtn = document.getElementById("eraser-btn");
+      const clearBtn = document.getElementById("clear-btn");
+      const lineWidthSlider = document.getElementById("line-width");
+
+      colorPicker.addEventListener("input", () => {
+        currentColor = colorPicker.value;
+        eraserMode = false;
+        eraserBtn.classList.remove("active");
+      });
+
+      eraserBtn.addEventListener("click", () => {
+        eraserMode = !eraserMode;
+        eraserBtn.classList.toggle("active", eraserMode);
+      });
+
+      clearBtn.addEventListener("click", () => {
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        hasDrawing = false;
+      });
+
+      lineWidthSlider.addEventListener("input", () => {
+        currentLineWidth = parseInt(lineWidthSlider.value);
+      });
+
+      /* -------------------------- SEND + ZIP EXPORT -------------------------- */
+      const giftInput = document.getElementById("gift-code");
+      const msgInput = document.getElementById("encouragement");
+      const sendBtn = document.getElementById("send-btn");
+      const statusText = document.getElementById("status-text");
+
+      sendBtn.addEventListener("click", async () => {
+        let rewardValue = null;
+
+        if (currentRewardType === "gift") {
+          rewardValue = giftInput.value.trim();
+          if (!rewardValue) {
+            statusText.textContent = "Please enter a gift card code.";
+            return;
+          }
+        }
+
+        if (currentRewardType === "message") {
+          rewardValue = msgInput.value.trim();
+          if (!rewardValue) {
+            statusText.textContent = "Please write a message.";
+            return;
+          }
+        }
+
+        if (currentRewardType === "drawing") {
+          if (!hasDrawing) {
+            statusText.textContent = "Please add a drawing first.";
+            return;
+          }
+          rewardValue = canvas.toDataURL("image/png");
+        }
+
+        const zip = new JSZip();
+
+        zip.file(
+          "meta.json",
+          JSON.stringify(
+            {
+              habit: habitParam,
+              time: timeParam,
+              rewardType: currentRewardType,
+            },
+            null,
+            2
+          )
+        );
+
+        if (currentRewardType === "gift")
+          zip.file("gift_code.txt", rewardValue);
+
+        if (currentRewardType === "message")
+          zip.file("message.txt", rewardValue);
+
+        if (currentRewardType === "drawing") {
+          const base64 = rewardValue.split(",")[1];
+          zip.file("drawing.png", base64, { base64: true });
+        }
+
+        const blob = await zip.generateAsync({ type: "blob" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "rootine_reward.zip";
+        a.click();
+
+        URL.revokeObjectURL(url);
+
+        statusText.textContent = "Sent! (ZIP downloaded)";
+      });
+    </script>
+  </body>
+</html>
